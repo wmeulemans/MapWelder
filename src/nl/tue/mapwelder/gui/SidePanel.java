@@ -5,14 +5,9 @@
  */
 package nl.tue.mapwelder.gui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Iterator;
-import nl.tue.geometrycore.geometry.linear.Polygon;
+import nl.tue.geometrycore.gui.sidepanel.ComboTab;
 import nl.tue.geometrycore.gui.sidepanel.SideTab;
 import nl.tue.geometrycore.gui.sidepanel.TabbedSidePanel;
-import nl.tue.geometrycore.util.DoubleUtil;
-import nl.tue.mapwelder.data.Region;
 
 /**
  *
@@ -26,7 +21,8 @@ public class SidePanel extends TabbedSidePanel {
         this.data = data;
 
         initIOTab();
-        initOperationTab();
+        initAnalysisTab();
+        initAlgorithmTab();
         initToolTab();
         initRenderTab();
     }
@@ -35,58 +31,22 @@ public class SidePanel extends TabbedSidePanel {
         addComboTab("IO", (e, v) -> data.activeFormat = v, data.activeFormat, data.formats);
     }
 
-    private void initOperationTab() {
-        SideTab tab = addTab("Operations");
+    private void initAnalysisTab() {
+        ComboTab tab = addComboTab("Analysis", (e, v) -> {
+        }, data.analyses[0], data.analyses);
+        
+        tab.startCommonMode();
 
-        tab.addButton("Trim no area", new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                for (Region r : data.map.getRegions()) {
-                    Iterator<Polygon> it = r.getParts().iterator();
-                    while (it.hasNext()) {
-                        Polygon p = it.next();
-
-                        if (p.areaUnsigned() < DoubleUtil.EPS) {
-                            it.remove();
-                        }
-                    }
-                }
-                data.mapChanged();
+        tab.addCheckbox("Auto refresh graph", data.autoregraph, (e, v) -> {
+            data.autoregraph = v;
+            if (data.autoregraph) {
+                data.ensureGraph();
             }
         });
+        tab.addButton("Compute graph", (e) -> data.ensureGraph());
 
-        tab.addSpace();
+        tab.endCommonMode();
 
-        tab.addCheckbox("Auto refresh graph", data.autoanalyze, (e, v) -> data.autoanalyze = v);
-        tab.addButton("Analyze problems", (ActionEvent e) -> {
-            data.analyzeMapProblems();
-        });
-        tab.addCheckbox("Draw small angles", data.drawSmallAngles, (e, v) -> {
-            data.drawSmallAngles = v;
-            data.repaint();
-        });
-        tab.addCheckbox("Draw within-region issues", data.drawWithinRegionIssues, (e, v) -> {
-            data.drawWithinRegionIssues = v;
-            data.repaint();
-        });
-        tab.addCheckbox("Draw between-region issues", data.drawBetweenRegionIssues, (e, v) -> {
-            data.drawBetweenRegionIssues = v;
-            data.repaint();
-        });
-
-        tab.addCheckbox("Auto refresh graph", data.autoregraph, (e, v) -> data.autoregraph = v);
-        tab.addButton("Create graph", (ActionEvent e) -> {
-            data.computeGraph();
-        });
-
-        tab.addButton("Clear graph", (ActionEvent e) -> {
-            data.cleargraph();
-        });
-
-        tab.addButton("Analyze graph", (ActionEvent e) -> {
-            data.analyzeProblems();
-        });
     }
 
     private void initToolTab() {
@@ -94,6 +54,13 @@ public class SidePanel extends TabbedSidePanel {
             data.activeTool = v;
             data.repaint();
         }, data.activeTool, data.tools);
+    }
+
+    private void initAlgorithmTab() {
+        addComboTab("Algorithms", (e, v) -> {
+            data.activeAlgorithm = v;
+            data.repaint();
+        }, data.activeAlgorithm, data.algorithms);
     }
 
     private void initRenderTab() {

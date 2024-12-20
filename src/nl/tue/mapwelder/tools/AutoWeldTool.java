@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package nl.tue.mapwelder.gui.tools;
+package nl.tue.mapwelder.tools;
 
 import java.awt.Color;
 import java.awt.event.KeyEvent;
@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Set;
 import nl.tue.geometrycore.geometry.CyclicGeometry;
 import nl.tue.geometrycore.geometry.Vector;
-import nl.tue.geometrycore.geometry.curved.Circle;
 import nl.tue.geometrycore.geometry.linear.LineSegment;
 import nl.tue.geometrycore.geometry.linear.Polygon;
 import nl.tue.geometrycore.geometry.linear.Rectangle;
@@ -213,7 +212,7 @@ public class AutoWeldTool extends BrushTool {
                     weldClick(positions.get(positions.size() - 1), true);
                 }
 
-                data.mapChanged();
+                data.mapChanged(true);
             }
         }
         positions.clear();

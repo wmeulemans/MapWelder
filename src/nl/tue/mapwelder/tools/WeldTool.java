@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package nl.tue.mapwelder.gui.tools;
+package nl.tue.mapwelder.tools;
 
 import java.awt.Color;
 import java.awt.event.KeyEvent;
@@ -32,7 +32,7 @@ public class WeldTool extends BrushTool {
     }
 
     @Override
-    public void onSelect() {        
+    public void onSelect() {
         loc = null;
     }
 
@@ -40,12 +40,12 @@ public class WeldTool extends BrushTool {
     public void onDeselect() {
         loc = null;
     }
-    
+
     @Override
     public String getDescription() {
         return "All vertices are set to the location that is the mean position of the vertices within the brush. When holding Shift, the clicked location is used instead."
                 + "<br/><br/>"
-                + "When holding Control, any edge fully crossing the brush receives a new vertex at the above-mentioned location as well."                
+                + "When holding Control, any edge fully crossing the brush receives a new vertex at the above-mentioned location as well."
                 + "<br/><br/>"
                 + "Press Delete to remove all vertices within the brush.";
     }
@@ -112,7 +112,7 @@ public class WeldTool extends BrushTool {
             pull.getFirst().addVertex(pull.getSecond() + 1, newloc.clone());
         }
 
-        data.mapChanged();
+        data.mapChanged(true);
     }
 
     private void deletePress() {
@@ -139,7 +139,7 @@ public class WeldTool extends BrushTool {
             }
         }
 
-        data.mapChanged();
+        data.mapChanged(true);
     }
 
     private boolean isRegionTouchingBrush(Region r, CyclicGeometry placedbrush) {

@@ -7,13 +7,10 @@ package nl.tue.mapwelder.io;
 
 import java.awt.Color;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import nl.tue.geometrycore.geometry.BaseGeometry;
 import nl.tue.geometrycore.geometry.GeometryType;
 import nl.tue.geometrycore.geometry.Vector;
@@ -161,6 +158,7 @@ public class IpeFormat extends Format {
     private static void write(IPEWriter write, PlaneMap map) throws IOException {
 
         write.initialize();
+        write.setTextSerifs(true);
 
         write.setSizeMode(SizeMode.WORLD);
         write.setStroke(Color.black, 1, Dashing.SOLID);
@@ -168,6 +166,7 @@ public class IpeFormat extends Format {
 
         for (Region r : map.getRegions()) {
             write.draw(r);
+            write.draw(r.centroid(), r.getLabel());
         }
     }
 }

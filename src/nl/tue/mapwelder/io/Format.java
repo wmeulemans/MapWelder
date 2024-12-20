@@ -36,14 +36,14 @@ public abstract class Format implements ComboTabItem {
             int result = choose.showOpenDialog(null);
             if (result == JFileChooser.APPROVE_OPTION) {
                 data.map = load(choose.getSelectedFile());
-                data.mapChanged();
+                data.mapChanged(true);
                 data.draw.zoomToFit();
             }
         } catch (IOException ex) {
             Logger.getLogger(Format.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public void save() {
         int result = choose.showSaveDialog(null);
         if (result == JFileChooser.APPROVE_OPTION) {
@@ -62,7 +62,7 @@ public abstract class Format implements ComboTabItem {
         }
 
         if (canSave()) {
-            tab.addButton("Save file", (e) -> load());
+            tab.addButton("Save file", (e) -> save());
         }
     }
 

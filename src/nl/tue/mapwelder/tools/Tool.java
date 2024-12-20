@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package nl.tue.mapwelder.gui.tools;
+package nl.tue.mapwelder.tools;
 
 import nl.tue.geometrycore.geometry.Vector;
 import nl.tue.geometrycore.gui.sidepanel.ComboTabItem;

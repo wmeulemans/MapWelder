@@ -22,6 +22,7 @@ import nl.tue.geometrycore.geometryrendering.styling.SizeMode;
 import nl.tue.geometrycore.geometryrendering.styling.TextAnchor;
 import nl.tue.mapwelder.data.Graph.Vertex;
 import nl.tue.mapwelder.data.Region;
+import nl.tue.mapwelder.analyses.Analysis.Problem;
 import nl.tue.mapwelder.io.IpeFormat;
 
 /**
@@ -126,16 +127,10 @@ public class DrawPanel extends GeometryPanel {
         setFill(null, Hashures.SOLID);
         setAlpha(1);
         setPointStyle(PointStyle.SQUARE_SOLID, data.vertex + 2);
-        if (data.drawSmallAngles) {
-            draw(data.smallangles);
-        }
-        if (data.drawWithinRegionIssues) {
-            draw(data.withinRegionIntersections);
-        }
-        if (data.drawBetweenRegionIssues) {
-            draw(data.betweenRegionIntersections);
-        }
 
+        for (Problem p : data.problems) {
+            p.render(this);
+        }
         data.activeTool.render();
     }
 
@@ -190,7 +185,7 @@ public class DrawPanel extends GeometryPanel {
                 if (ctrl) {
                     try {
                         data.map = IpeFormat.fromClipboard();
-                        data.mapChanged();
+                        data.mapChanged(true);
                         data.draw.zoomToFit();
                     } catch (IOException ex) {
                         Logger.getLogger(DrawPanel.class.getName()).log(Level.SEVERE, null, ex);
@@ -213,6 +208,9 @@ public class DrawPanel extends GeometryPanel {
                 break;
             }
             case KeyEvent.VK_SPACE:
+                break;
+            case KeyEvent.VK_R:
+                data.zoomToRegion(shift ? 1 : ctrl ? -1 : 0);
                 break;
             default:
                 data.activeTool.keyPress(keycode, ctrl, shift, alt);

@@ -5,6 +5,7 @@
  */
 package nl.tue.mapwelder.data;
 
+import nl.tue.geometrycore.geometry.Vector;
 import nl.tue.geometrycore.geometry.linear.Polygon;
 import nl.tue.geometrycore.geometry.linear.Rectangle;
 import nl.tue.geometrycore.geometry.mix.GeometryGroup;
@@ -30,7 +31,6 @@ public class Region extends GeometryGroup<Polygon> {
         this.label = label;
     }
 
-    
     public Rectangle getBox() {
         return box;
     }
@@ -39,6 +39,19 @@ public class Region extends GeometryGroup<Polygon> {
         box.setWidth(-1);
         box.setHeight(-1);
         box.includeGeometry(getParts());
+    }
+
+    public Vector centroid() {
+        Vector pos = Vector.origin();
+        double A = 0;
+        for (Polygon p : getParts()) {
+            A += p.areaUnsigned();
+        }
+        for (Polygon p : getParts()) {
+            double f = p.areaUnsigned() / A;
+            pos.translate(Vector.multiply(f, p.centroid()));
+        }
+        return pos;
     }
 
 }

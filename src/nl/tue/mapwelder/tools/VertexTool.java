@@ -3,10 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package nl.tue.mapwelder.gui.tools;
+package nl.tue.mapwelder.tools;
 
 import java.awt.Color;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import nl.tue.geometrycore.geometry.Vector;
 import nl.tue.geometrycore.geometry.linear.Polygon;
 import nl.tue.geometrycore.geometryrendering.glyphs.PointStyle;
@@ -34,7 +35,7 @@ public class VertexTool extends Tool {
                 + "<br/><br/>"
                 + "Press Delete to remove the vertex completely.";
     }
-    
+
     @Override
     public void onSelect() {
         region = null;
@@ -60,7 +61,7 @@ public class VertexTool extends Tool {
             point = null;
             polygon = null;
 
-            data.mapChanged();
+            data.mapChanged(true);
         }
     }
 
@@ -80,6 +81,11 @@ public class VertexTool extends Tool {
 
     @Override
     public void mousePress(Vector loc, int button, boolean ctrl, boolean shift, boolean alt) {
+        if (button != MouseEvent.BUTTON1) {
+            point = null;
+            return;
+        }
+
         point = null;
         double nearest = data.draw.convertViewToWorld(50);
 
@@ -117,7 +123,7 @@ public class VertexTool extends Tool {
 
     @Override
     public void mouseDrag(Vector loc, Vector prevloc, int button, boolean ctrl, boolean shift, boolean alt) {
-        if (point != null) {
+        if (point != null && button == MouseEvent.BUTTON1) {
             point.set(loc);
             data.repaint();
         }
@@ -125,9 +131,9 @@ public class VertexTool extends Tool {
 
     @Override
     public void mouseRelease(Vector loc, int button, boolean ctrl, boolean shift, boolean alt) {
-        if (point != null) {
+        if (point != null && button == MouseEvent.BUTTON1) {
             point.set(loc);
-            data.mapChanged();
+            data.mapChanged(true);
         }
     }
 
