@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import nl.tue.geometrycore.gui.sidepanel.ComboTabItem;
 import nl.tue.geometrycore.gui.sidepanel.SideTab;
 import nl.tue.mapwelder.data.PlaneMap;
@@ -25,14 +26,19 @@ public abstract class Format implements ComboTabItem {
 
     final protected Data data;
     final String name;
+    final FileNameExtensionFilter filter;
 
-    public Format(Data data, String name) {
+    public Format(Data data, String name, String... extensions) {
         this.data = data;
         this.name = name;
+        this.filter = new FileNameExtensionFilter(name, extensions);
     }
 
     public void load() {
         try {
+            choose.resetChoosableFileFilters();
+            choose.addChoosableFileFilter(filter);
+            choose.setFileFilter(filter);
             int result = choose.showOpenDialog(null);
             if (result == JFileChooser.APPROVE_OPTION) {
                 data.map = load(choose.getSelectedFile());
@@ -45,6 +51,9 @@ public abstract class Format implements ComboTabItem {
     }
 
     public void save() {
+        choose.resetChoosableFileFilters();
+        choose.addChoosableFileFilter(filter);
+        choose.setFileFilter(filter);
         int result = choose.showSaveDialog(null);
         if (result == JFileChooser.APPROVE_OPTION) {
             try {

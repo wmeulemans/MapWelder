@@ -6,15 +6,9 @@
 package nl.tue.mapwelder.io;
 
 import java.awt.Color;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JTextField;
 import nl.tue.geometrycore.geometry.BaseGeometry;
 import nl.tue.geometrycore.geometry.GeometryType;
 import nl.tue.geometrycore.geometry.linear.Polygon;
@@ -40,7 +34,7 @@ public class SvgFormat extends Format {
     private String label = "label";
 
     public SvgFormat(Data data) {
-        super(data, "SVG");
+        super(data, "SVG", "svg");
     }
 
     @Override

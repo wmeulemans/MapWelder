@@ -36,7 +36,7 @@ public class DecomposedJsonFormat extends Format {
     private boolean fittobox = true;
 
     public DecomposedJsonFormat(Data data) {
-        super(data, "Decomposed JSON");
+        super(data, "Decomposed JSON", "json");
     }
 
     @Override

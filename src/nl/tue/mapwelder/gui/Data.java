@@ -53,8 +53,8 @@ public class Data {
         new SmallAreaRemoval(this),
         new Coarsen(this),
         new Decimate(this),
-        new VisvalingamWhyatt(this),
-        new VisvalingamWhyatt(this)};
+        new VisvalingamWhyatt(this)
+    };
     public Algorithm activeAlgorithm = algorithms[0];
 
     public Analysis[] analyses = {
@@ -68,7 +68,7 @@ public class Data {
         new SvgFormat(this),
         new GeojsonFormat(this),
         new DecomposedJsonFormat(this)};
-    public Format activeFormat = formats[0];
+    public Format activeFormat = formats[2];
 
     public PlaneMap map = new PlaneMap(new Rectangle());
     public Region hover = null;

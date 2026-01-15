@@ -35,7 +35,7 @@ import nl.tue.mapwelder.gui.Data;
 public class IpeFormat extends Format {
 
     public IpeFormat(Data data) {
-        super(data, "IPE");
+        super(data, "IPE", "ipe");
     }
 
     @Override

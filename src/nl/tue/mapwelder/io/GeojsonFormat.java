@@ -5,16 +5,18 @@
  */
 package nl.tue.mapwelder.io;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import nl.tue.geometrycore.geometry.Vector;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
 import nl.tue.geometrycore.geometry.linear.Polygon;
 import nl.tue.geometrycore.geometry.linear.Rectangle;
+import nl.tue.geometrycore.geometry.mix.GeometryGroup;
 import nl.tue.geometrycore.gui.sidepanel.SideTab;
+import nl.tue.geometrycore.io.ReadItem;
+import nl.tue.geometrycore.io.json.GeoJSONReader;
+import nl.tue.geometrycore.io.json.GeoJSONWriter;
 import nl.tue.mapwelder.data.PlaneMap;
 import nl.tue.mapwelder.data.Region;
 import nl.tue.mapwelder.gui.Data;
@@ -28,7 +30,7 @@ public class GeojsonFormat extends Format {
     private String label = "label";
 
     public GeojsonFormat(Data data) {
-        super(data, "GEOJSON");
+        super(data, "GeoJSON", "geojson");
     }
 
     @Override
@@ -38,15 +40,72 @@ public class GeojsonFormat extends Format {
         tab.addTextField(label, (e, v) -> label = v);
 
     }
+
     @Override
     protected PlaneMap load(File file) throws IOException {
-        return readFile(file, label);
-    }
+        try (GeoJSONReader read = GeoJSONReader.fileReader(file)) {
+            read.setTrimQuotes(false);
+            List<ReadItem> items = read.read();
 
+            PlaneMap map = new PlaneMap(new Rectangle());
+
+            for (ReadItem item : items) {
+
+                // reading only polygons/multipolygons
+                // other features are ignored                
+                try {
+                    String lbl = item.getAuxiliary().get(label);
+                    if (lbl == null) {
+                        lbl = "r" + (map.getRegions().size() + 1);
+                    }
+                    Region R = new Region(lbl);
+
+                    switch (item.getGeometry().getGeometryType()) {
+                        case POLYGON:
+                            R.getParts().add((Polygon) item.toGeometry());
+                            break;
+                        case GEOMETRYGROUP:
+                            GeometryGroup<Polygon> grp = (GeometryGroup<Polygon>) item.getGeometry();
+                            for (Polygon p : grp.getParts()) {
+                                R.getParts().add(p);
+                            }
+                            break;
+                    }
+
+                    
+                    R.setAux(item.getAuxiliary());
+                    R.updateBox();
+                    map.getRegions().add(R);
+
+                } catch (Exception ex) {
+                    System.out.println("Warning: unsupported geometry type -- " + item.getGeometry());
+                }
+            }
+
+            map.getBox().includeGeometry(map.getRegions());
+
+            return map;
+        }
+    }
 
     @Override
     protected void save(File file, PlaneMap map) throws IOException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try (GeoJSONWriter write = GeoJSONWriter.fileWriter(file, true)) {
+
+            write.initialize();
+
+            for (Region r : map.getRegions()) {
+
+                String[][] props = getPropertyArray(r);
+                Polygon[][] polies = getMultiPolygon(r);
+
+                if (polies.length == 1) {
+                    write.write(polies[0], props);
+                } else {
+                    write.write(polies, props);
+                }
+            }
+        }
     }
 
     @Override
@@ -56,78 +115,78 @@ public class GeojsonFormat extends Format {
 
     @Override
     protected boolean canSave() {
-        return false;
+        return true;
     }
 
-
-    public static PlaneMap readFile(File file, String label) throws IOException {
-        try (BufferedReader read = new BufferedReader(new FileReader(file))) {
-            return read(read, label);
+    private class Ring {
+        Polygon polygon;
+        double area;
+        List<Ring> inner;
+    }
+    
+    private Polygon[][] getMultiPolygon(Region region) {
+        
+        // NB: we assume that all polygons of a single region do not boundary-intersect, not even at a common vertex
+        
+        List<Ring> rings = new ArrayList();
+        for (Polygon p : region.getParts()) {
+            Ring ring = new Ring();
+            ring.polygon = p.clone();
+            ring.area = p.areaSigned();
+            ring.inner = null;
+            rings.add(ring);
         }
-    }
-
-    private static PlaneMap read(BufferedReader read, String label) throws IOException {
-
-        PlaneMap map = new PlaneMap(new Rectangle());
-
-        String line = read.readLine();
-        String LI = "\"" + label + "\":";
-        String CI = "\"coordinates\":";
-        while (line != null) {
-            if (line.contains("\"type\":\"Feature\"")) {
-
-                int cs = line.indexOf(CI) + CI.length();
-                int ce = line.indexOf("}", cs);
-                String coords = line.substring(cs, ce);
-                if (!coords.startsWith("[[[[")) {
-                    coords = "[" + coords + "]";
-                }
-
-                int ls = line.indexOf(LI) + LI.length() + 1;
-                int le = line.indexOf("\"", ls + 1);
-                Region R = new Region(line.substring(ls, le));
-                map.getRegions().add(R);
-                parseMultiPolygon(R, coords);
-                R.updateBox();
-            }
-
-            line = read.readLine();
-        }
-        map.getBox().includeGeometry(map.getRegions());
-
-        return map;
-    }
-
-    private static void parseMultiPolygon(Region R, String coords) {
-        String[] polies = coords.split("\\]\\]\\],\\[\\[\\[");
-        for (String poly : polies) {
-            String[] xys = poly.split(",");
-            Polygon P = new Polygon();
-            R.getParts().add(P);
-            for (int i = 0; i < xys.length; i++) {
-                xys[i] = xys[i].replaceAll("\\]", "").replaceAll("\\[", "");
-            }
-            for (int i = 0; i < xys.length; i += 2) {
-                double x = Double.parseDouble(xys[i]);
-                double y = Double.parseDouble(xys[i + 1]);
-                Vector v = new Vector(x, y);
-                if (P == null) {
-                    P = new Polygon();
-                    R.getParts().add(P);
-                    P.addVertex(v);
-                } else if (P.vertexCount() > 0 && v.isApproximately(P.vertex(0))) {
-                    // start a new poly?
-                    P = null;
-                } else {
-                    P.addVertex(v);
+        
+        rings.sort((a,b) -> Double.compare(Math.abs(b.area), Math.abs(a.area))); // large to small
+                
+        List<Ring> outer = new ArrayList();
+        nextring:
+        for (Ring r : rings) {
+            // see if its nested in an outerring
+            for (Ring o : outer) {
+                if (o.polygon.contains(r.polygon.vertex(0))) {
+                    o.inner.add(r);
+                    // ensure CW
+                    if (r.area > 0) {
+                        r.polygon.reverse();
+                    }
+                    continue nextring;
                 }
             }
+            // no outerring, so this must be a new one
+            r.inner = new ArrayList();
+            outer.add(r);
+            // ensure CCW
+            if (r.area < 0) {
+                r.polygon.reverse();
+            }
         }
-//        if (polies.length > 1 || R.getParts().size() > 1) {
-//            System.out.println("coords: " + coords);
-//            for (Polygon P : R.getParts()) {
-//                System.out.println("> " + P);
-//            }
-//        }
+        
+        Polygon[][] mp = new Polygon[outer.size()][];
+        for (int out_i = 0; out_i < outer.size(); out_i++) {
+            Ring o = outer.get(out_i);
+            Polygon[] p = mp[out_i] = new Polygon[o.inner.size()+1];
+            p[0] = o.polygon;
+            for (int in_i = 0; in_i < o.inner.size(); in_i++) {
+                p[in_i+1] = o.inner.get(in_i).polygon;
+            }
+        }
+        
+        return mp;
+    }
+
+    private String[][] getPropertyArray(Region r) {
+        if (r.getAux() == null) {
+            return null;
+        }
+
+        String[][] props = new String[r.getAux().size()][2];
+        int i = 0;
+        for (Entry<String, String> e : r.getAux().entrySet()) {
+            props[i][0] = e.getKey();
+            props[i][1] = e.getValue();
+            i++;
+        }
+        return props;
     }
 }
