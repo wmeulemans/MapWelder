@@ -5,8 +5,7 @@
  */
 package nl.tue.mapwelder.gui;
 
-import java.awt.BorderLayout;
-import javax.swing.JFrame;
+import nl.tue.geometrycore.gui.GUIUtil;
 
 /**
  *
@@ -15,20 +14,12 @@ import javax.swing.JFrame;
 public class Main {
     
     public static void main(String[] args) {
-        
-        JFrame frame = new JFrame("MapWelder");
-        
+                
         Data data = new Data();
         data.draw = new DrawPanel(data);
         data.side = new SidePanel(data);
         
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        frame.setLayout(new BorderLayout());
-        frame.add(data.draw, BorderLayout.CENTER);        
-        frame.add(data.side, BorderLayout.WEST);
-        
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
+        GUIUtil.makeMainFrame("MapWelder", data.draw, data.side);
         
     }
 }
