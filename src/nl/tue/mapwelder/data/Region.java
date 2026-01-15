@@ -5,6 +5,7 @@
  */
 package nl.tue.mapwelder.data;
 
+import java.awt.Color;
 import nl.tue.geometrycore.geometry.Vector;
 import nl.tue.geometrycore.geometry.linear.Polygon;
 import nl.tue.geometrycore.geometry.linear.Rectangle;
@@ -16,11 +17,20 @@ import nl.tue.geometrycore.geometry.mix.GeometryGroup;
  */
 public class Region extends GeometryGroup<Polygon> {
 
+    private Color color;
     private String label;
     private Rectangle box = new Rectangle();
 
     public Region(String label) {
         this.label = label;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
     }
 
     public String getLabel() {

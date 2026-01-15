@@ -115,6 +115,7 @@ public class IpeFormat extends Format {
         for (ReadItem item : items) {
 
             Region r = new Region("");
+            r.setColor(item.getFill());
             map.getRegions().add(r);
             boolean err = handle(r, item.getGeometry());
             r.updateBox();
@@ -165,6 +166,11 @@ public class IpeFormat extends Format {
         write.setFill(Color.lightGray, Hashures.SOLID);
 
         for (Region r : map.getRegions()) {
+            if (r.getColor() != null) {
+                write.setFill(r.getColor(), Hashures.SOLID);
+            } else {
+                write.setFill(Color.lightGray, Hashures.SOLID);
+            }
             write.draw(r);
             write.draw(r.centroid(), r.getLabel());
         }

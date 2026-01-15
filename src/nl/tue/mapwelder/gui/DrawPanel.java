@@ -51,6 +51,8 @@ public class DrawPanel extends GeometryPanel {
             Color color;
             if (r == data.hover) {
                 color = Color.red;
+            } else if (r.getColor() != null) {
+                color = r.getColor();
             } else {
                 color = Color.black;
             }

@@ -17,6 +17,8 @@ import nl.tue.mapwelder.algorithms.Decimate;
 import nl.tue.mapwelder.algorithms.ShortEdgeRemoval;
 import nl.tue.mapwelder.algorithms.SmallAngleRemoval;
 import nl.tue.mapwelder.algorithms.SmallAreaRemoval;
+import nl.tue.mapwelder.algorithms.VisvalingamWhyatt;
+import nl.tue.mapwelder.algorithms.VisvalingamWhyatt;
 import nl.tue.mapwelder.analyses.Analysis;
 import nl.tue.mapwelder.analyses.Analysis.Problem;
 import nl.tue.mapwelder.analyses.Intersections;
@@ -50,7 +52,9 @@ public class Data {
         new ShortEdgeRemoval(this),
         new SmallAreaRemoval(this),
         new Coarsen(this),
-        new Decimate(this)};
+        new Decimate(this),
+        new VisvalingamWhyatt(this),
+        new VisvalingamWhyatt(this)};
     public Algorithm activeAlgorithm = algorithms[0];
 
     public Analysis[] analyses = {

@@ -7,7 +7,7 @@ package nl.tue.mapwelder.data;
 
 import java.util.ArrayList;
 import java.util.List;
-import nl.tue.geometrycore.datastructures.quadtree.QuadTree;
+import nl.tue.geometrycore.datastructures.quadtree.PointQuadTree;
 import nl.tue.geometrycore.geometry.Vector;
 import nl.tue.geometrycore.geometry.linear.LineSegment;
 import nl.tue.geometrycore.geometry.linear.Polygon;
@@ -25,10 +25,10 @@ import nl.tue.mapwelder.data.Graph.Vertex;
  */
 public class Graph extends SimpleGraph<LineSegment, Vertex, Edge> {
 
-    private final QuadTree<Vertex> quadtree;
+    private final PointQuadTree<Vertex> quadtree;
 
     public Graph(PlaneMap map) {
-        quadtree = new QuadTree(map.getBox(), 18);
+        quadtree = new PointQuadTree(map.getBox(), 18);
 
         for (Region r : map.getRegions()) {
             for (Polygon p : r.getParts()) {
@@ -36,7 +36,7 @@ public class Graph extends SimpleGraph<LineSegment, Vertex, Edge> {
                 for (int i = 0; i < p.vertexCount(); i++) {
                     Vertex pi = getOrAdd(p.vertex(i));
                     pi.map.add(new MapOccurrance(p, p.vertex(i)));
-                    if (!pp.isNeighborOf(pi)) {
+                    if (pp != pi && !pp.isNeighborOf(pi)) {
                         addEdge(pp, pi, new LineSegment(pp.clone(), pi.clone()));
                     }
                     pp = pi;
@@ -54,9 +54,9 @@ public class Graph extends SimpleGraph<LineSegment, Vertex, Edge> {
         quadtree.insert(r);
         return r;
     }
-    
+
     public List<Vertex> find(Rectangle R) {
-        return quadtree.find(R, 10*DoubleUtil.EPS);
+        return quadtree.findContained(R, 10 * DoubleUtil.EPS);
     }
 
     public void removeWithBacktracing(Vertex v) {
@@ -65,6 +65,7 @@ public class Graph extends SimpleGraph<LineSegment, Vertex, Edge> {
         Vertex u = v.getEdges().get(0).getOtherVertex(v);
         Vertex w = v.getEdges().get(1).getOtherVertex(v);
 
+        quadtree.remove(v);
         removeVertex(v);
         addEdge(u, w, new LineSegment(u.clone(), w.clone()));
 
