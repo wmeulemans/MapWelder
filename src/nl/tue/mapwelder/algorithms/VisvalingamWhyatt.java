@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package nl.tue.mapwelder.algorithms;
 
 import java.util.ArrayList;
@@ -16,7 +12,7 @@ import nl.tue.mapwelder.gui.Data;
 
 /**
  *
- * @author wmeulema
+ * @author Wouter Meulemans (w.meulemans@tue.nl)
  */
 public class VisvalingamWhyatt extends Algorithm {
 

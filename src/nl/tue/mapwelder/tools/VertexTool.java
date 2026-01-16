@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package nl.tue.mapwelder.tools;
 
 import java.awt.Color;
@@ -17,7 +12,7 @@ import nl.tue.mapwelder.gui.Data;
 
 /**
  *
- * @author Wouter
+ * @author Wouter Meulemans (w.meulemans@tue.nl)
  */
 public class VertexTool extends Tool {
 

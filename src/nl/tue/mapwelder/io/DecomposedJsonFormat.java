@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package nl.tue.mapwelder.io;
 
 import java.io.ByteArrayOutputStream;
@@ -14,8 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import nl.tue.geometrycore.geometry.Vector;
 import nl.tue.geometrycore.geometry.linear.Polygon;
 import nl.tue.geometrycore.geometry.linear.Rectangle;

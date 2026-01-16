@@ -4,4 +4,4 @@ MapWelder is a simple Java tool to ensure that geographic maps described by sets
 
 # Dependencies
 
-MapWelder is developed using GeometryCore (https://github.com/tue-alga/GeometryCore)
+MapWelder is developed using GeometryCore (https://github.com/tue-alga/GeometryCore).

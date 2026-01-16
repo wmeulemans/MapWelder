@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package nl.tue.mapwelder.gui;
 
 import java.util.ArrayList;
@@ -17,7 +12,6 @@ import nl.tue.mapwelder.algorithms.Decimate;
 import nl.tue.mapwelder.algorithms.ShortEdgeRemoval;
 import nl.tue.mapwelder.algorithms.SmallAngleRemoval;
 import nl.tue.mapwelder.algorithms.SmallAreaRemoval;
-import nl.tue.mapwelder.algorithms.VisvalingamWhyatt;
 import nl.tue.mapwelder.algorithms.VisvalingamWhyatt;
 import nl.tue.mapwelder.analyses.Analysis;
 import nl.tue.mapwelder.analyses.Analysis.Problem;
@@ -36,7 +30,7 @@ import nl.tue.mapwelder.io.SvgFormat;
 
 /**
  *
- * @author Wouter
+ * @author Wouter Meulemans (w.meulemans@tue.nl)
  */
 public class Data {
 
