@@ -12,7 +12,9 @@ import nl.tue.mapwelder.algorithms.Decimate;
 import nl.tue.mapwelder.algorithms.ShortEdgeRemoval;
 import nl.tue.mapwelder.algorithms.SmallAngleRemoval;
 import nl.tue.mapwelder.algorithms.SmallAreaRemoval;
+import nl.tue.mapwelder.algorithms.SnapToGraph;
 import nl.tue.mapwelder.algorithms.VisvalingamWhyatt;
+import nl.tue.mapwelder.algorithms.WeldAlgorithm;
 import nl.tue.mapwelder.analyses.Analysis;
 import nl.tue.mapwelder.analyses.Analysis.Problem;
 import nl.tue.mapwelder.analyses.Intersections;
@@ -47,7 +49,9 @@ public class Data {
         new SmallAreaRemoval(this),
         new Coarsen(this),
         new Decimate(this),
-        new VisvalingamWhyatt(this)
+        new VisvalingamWhyatt(this),
+        new SnapToGraph(this),
+        new WeldAlgorithm(this)
     };
     public Algorithm activeAlgorithm = algorithms[0];
 
@@ -68,7 +72,7 @@ public class Data {
     public Region hover = null;
 
     public Graph graph = null;
-    public boolean autoregraph = false;
+    public boolean autoregraph = true;
 
     public int boundary = 0;
     public boolean boundaryhover = false;

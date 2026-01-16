@@ -55,7 +55,7 @@ public class Decimate extends Algorithm {
             Vertex v = data.graph.getVertices().get(i);
             if (v.getDegree() == 2 && R.nextDouble() * 100 > pct) {
                 rem++;
-                data.graph.removeWithBacktracing(v);
+                data.graph.mergeVertexWithBacktracing(v);
             } else {
                 i++;
             }

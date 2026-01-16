@@ -55,7 +55,7 @@ public class Coarsen extends Algorithm {
             Vertex v = data.graph.getVertices().get(i);
             if (superfluous(v, T) && (!toposafe || safe(v))) {
                 rem++;
-                data.graph.removeWithBacktracing(v);
+                data.graph.mergeVertexWithBacktracing(v);
             } else {
                 i++;
             }

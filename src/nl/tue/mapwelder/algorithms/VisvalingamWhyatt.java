@@ -77,7 +77,7 @@ public class VisvalingamWhyatt extends Algorithm {
             eltmap[v.getGraphIndex()] = eltmap[data.graph.getVertices().size() - 1];
             eltmap[data.graph.getVertices().size() - 1] = null;
 
-            data.graph.removeWithBacktracing(v);
+            data.graph.mergeVertexWithBacktracing(v);
 
             for (Vertex b : elt.blocks) {
                 Elt belt = eltmap[b.getGraphIndex()];

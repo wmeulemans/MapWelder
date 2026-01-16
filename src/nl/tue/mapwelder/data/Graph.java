@@ -1,7 +1,9 @@
 package nl.tue.mapwelder.data;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import nl.tue.geometrycore.datastructures.quadtree.PointQuadTree;
 import nl.tue.geometrycore.geometry.Vector;
 import nl.tue.geometrycore.geometry.linear.LineSegment;
@@ -30,9 +32,13 @@ public class Graph extends SimpleGraph<LineSegment, Vertex, Edge> {
                 Vertex pp = getOrAdd(p.vertex(-1));
                 for (int i = 0; i < p.vertexCount(); i++) {
                     Vertex pi = getOrAdd(p.vertex(i));
-                    pi.map.add(new MapOccurrance(p, p.vertex(i)));
-                    if (pp != pi && !pp.isNeighborOf(pi)) {
-                        addEdge(pp, pi, new LineSegment(pp.clone(), pi.clone()));
+                    pi.map.add(new DefiningMapVertex(r, p, p.vertex(i)));
+                    if (pp != pi) {
+                        Edge e = pp.getEdgeTo(pi);
+                        if (e == null) {
+                            e = addEdge(pp, pi, new LineSegment(pp.clone(), pi.clone()));
+                        }
+                        e.map.add(new DefiningMapPolygon(r, p));
                     }
                     pp = pi;
                 }
@@ -54,18 +60,34 @@ public class Graph extends SimpleGraph<LineSegment, Vertex, Edge> {
         return quadtree.findContained(R, 10 * DoubleUtil.EPS);
     }
 
-    public void removeWithBacktracing(Vertex v) {
+    public void mergeVertexWithBacktracing(Vertex v) {
+        // NB: maintains graph
         assert v.getDegree() == 2;
-
+        
         Vertex u = v.getEdges().get(0).getOtherVertex(v);
         Vertex w = v.getEdges().get(1).getOtherVertex(v);
 
+        Set<DefiningMapPolygon> polies = new HashSet();
+        polies.addAll(v.getEdges().get(0).map);
+        polies.addAll(v.getEdges().get(1).map);
+        
+        removeVertexWithBacktracing(v);
+        
+        Edge e = addEdge(u, w, new LineSegment(u.clone(), w.clone()));
+        e.map.addAll(polies);
+
+    }
+    
+    public void removeVertexWithBacktracing(Vertex v) {
+        // NB: does not maintain graph
+        
         quadtree.remove(v);
         removeVertex(v);
-        addEdge(u, w, new LineSegment(u.clone(), w.clone()));
-
-        for (MapOccurrance mo : v.map) {
-            mo.P.removeVertex(mo.v);
+        for (DefiningMapVertex dmv : v.map) {
+            dmv.polygon.removeVertex(dmv.vertex);
+            if (dmv.polygon.vertexCount() <= 2) {                
+                dmv.region.getParts().remove(dmv.polygon);
+            }
         }
     }
 
@@ -81,21 +103,45 @@ public class Graph extends SimpleGraph<LineSegment, Vertex, Edge> {
 
     public static class Vertex extends SimpleVertex<LineSegment, Vertex, Edge> {
 
-        private List<MapOccurrance> map = new ArrayList();
+        private List<DefiningMapVertex> map = new ArrayList();
+
+        public List<DefiningMapVertex> getDefiningMapVertices() {
+            return map;
+        }
     }
 
     public static class Edge extends SimpleEdge<LineSegment, Vertex, Edge> {
-    }
 
-    public static class MapOccurrance {
+        private Set<DefiningMapPolygon> map = new HashSet();
 
-        final Polygon P;
-        final Vector v;
-
-        public MapOccurrance(Polygon P, Vector v) {
-            this.P = P;
-            this.v = v;
+        public Set<DefiningMapPolygon> getMap() {
+            return map;
         }
 
+    }
+
+    public static class DefiningMapVertex {
+
+        final public Region region;
+        final public Polygon polygon;
+        final public Vector vertex;
+
+        public DefiningMapVertex(Region r, Polygon P, Vector v) {
+            this.region = r;
+            this.polygon = P;
+            this.vertex = v;
+        }
+
+    }
+
+    public static class DefiningMapPolygon {
+
+        final public Region region;
+        final public Polygon polygon;
+
+        public DefiningMapPolygon(Region r, Polygon polygon) {
+            this.region = r;
+            this.polygon = polygon;
+        }
     }
 }

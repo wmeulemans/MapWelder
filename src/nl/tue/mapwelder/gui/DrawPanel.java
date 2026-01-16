@@ -12,12 +12,14 @@ import nl.tue.geometrycore.geometry.linear.Rectangle;
 import nl.tue.geometrycore.geometryrendering.GeometryPanel;
 import nl.tue.geometrycore.geometryrendering.glyphs.PointStyle;
 import nl.tue.geometrycore.geometryrendering.styling.Dashing;
+import nl.tue.geometrycore.geometryrendering.styling.ExtendedColors;
 import nl.tue.geometrycore.geometryrendering.styling.Hashures;
 import nl.tue.geometrycore.geometryrendering.styling.SizeMode;
 import nl.tue.geometrycore.geometryrendering.styling.TextAnchor;
 import nl.tue.mapwelder.data.Graph.Vertex;
 import nl.tue.mapwelder.data.Region;
 import nl.tue.mapwelder.analyses.Analysis.Problem;
+import nl.tue.mapwelder.data.Graph.Edge;
 import nl.tue.mapwelder.io.IpeFormat;
 
 /**
@@ -56,7 +58,7 @@ public class DrawPanel extends GeometryPanel {
                 setStroke(null, 1, Dashing.SOLID);
                 setAlpha(data.fillalpha / 100.0);
                 setFill(color, Hashures.SOLID);
-                draw(r.getParts());
+                draw(r);
             }
 
             if (data.boundary > 0 && (!data.boundaryhover || r == data.hover)) {
@@ -87,10 +89,23 @@ public class DrawPanel extends GeometryPanel {
         }
 
         if (data.graph != null) {
-            setStroke(Color.green, 1, Dashing.SOLID);
             setFill(null, Hashures.SOLID);
             setAlpha(1);
-            draw(data.graph.getEdges());
+            
+            for (Edge e : data.graph.getEdges()) {
+                switch (e.getMap().size()) {
+                    case 1:
+                        setStroke(Color.orange, 1, Dashing.SOLID);
+                        break;
+                    case 2:                        
+                        setStroke(Color.green, 1, Dashing.SOLID);
+                        break;
+                    default:
+                        setStroke(Color.red, 1, Dashing.SOLID);
+                        break;
+                }
+                draw(e);
+            }
 
             setPointStyle(PointStyle.CIRCLE_SOLID, data.vertex);
 
