@@ -29,7 +29,7 @@ public class SidePanel extends TabbedSidePanel {
     private void initAnalysisTab() {
         ComboTab tab = addComboTab("Analysis", (e, v) -> {
         }, data.analyses[0], data.analyses);
-        
+
         tab.startCommonMode();
 
         tab.addCheckbox("Auto refresh graph", data.autoregraph, (e, v) -> {
@@ -61,47 +61,107 @@ public class SidePanel extends TabbedSidePanel {
     private void initRenderTab() {
         SideTab tab = addTab("Render");
 
-        tab.addLabel("Fill alpha");
-        tab.addCheckbox("Hover only", data.fillalphahover, (e, v) -> {
-            data.fillalphahover = v;
-            data.repaint();
-        });
-        tab.addIntegerSlider(data.fillalpha, 0, 100, (e, v) -> {
-            data.fillalpha = v;
-            data.repaint();
-        });
+        tab.addLabel("POLYGON RENDERING");
 
-        tab.addSpace();
-
-        tab.addLabel("Boundary");
-        tab.addCheckbox("Hover only", data.boundaryhover, (e, v) -> {
-            data.boundaryhover = v;
-            data.repaint();
-        });
-        tab.addIntegerSlider(data.boundary, 0, 10, (e, v) -> {
-            data.boundary = v;
+        tab.addCheckbox("Enabled", data.render_polygons, (e, v) -> {
+            data.render_polygons = v;
             data.repaint();
         });
 
         tab.addSpace();
 
         tab.addLabel("Vertices");
-        tab.addCheckbox("Hover only", data.vertexhover, (e, v) -> {
-            data.vertexhover = v;
+        tab.addCheckbox("Hover only", data.polygon_vertex_hover, (e, v) -> {
+            data.polygon_vertex_hover = v;
             data.repaint();
         });
-        tab.addIntegerSlider(data.vertex, 0, 10, (e, v) -> {
-            data.vertex = v;
+        tab.makeCustomSplit(2, 0.3, 0.7);
+        tab.addLabel("- Radius");
+        tab.addIntegerSlider(data.polygon_vertex_radius, 0, 100, (e, v) -> {
+            data.polygon_vertex_radius = v;
+            data.repaint();
+        });
+        tab.makeCustomSplit(2, 0.3, 0.7);
+        tab.addLabel("- Alpha");
+        tab.addIntegerSlider(data.polygon_vertex_alpha, 0, 100, (e, v) -> {
+            data.polygon_vertex_alpha = v;
             data.repaint();
         });
 
-        tab.addLabel("Label");
-        tab.addCheckbox("Hover only", data.labelhover, (e, v) -> {
-            data.labelhover = v;
+        tab.addSpace();
+
+        tab.addLabel("Boundary");
+        tab.addCheckbox("Hover only", data.polygon_edge_hover, (e, v) -> {
+            data.polygon_edge_hover = v;
             data.repaint();
         });
-        tab.addIntegerSlider(data.labelsize, 0, 50, (e, v) -> {
-            data.labelsize = v;
+        tab.makeCustomSplit(2, 0.3, 0.7);
+        tab.addLabel("- Width");
+        tab.addIntegerSlider(data.polygon_edge_width, 0, 100, (e, v) -> {
+            data.polygon_edge_width = v;
+            data.repaint();
+        });
+        tab.makeCustomSplit(2, 0.3, 0.7);
+        tab.addLabel("- Alpha");
+        tab.addIntegerSlider(data.polygon_edge_alpha, 0, 100, (e, v) -> {
+            data.polygon_edge_alpha = v;
+            data.repaint();
+        });
+
+        tab.addSpace();
+
+        tab.addLabel("Fill");
+        tab.addCheckbox("Hover only", data.polygon_fill_hover, (e, v) -> {
+            data.polygon_fill_hover = v;
+            data.repaint();
+        });
+        tab.makeCustomSplit(2, 0.3, 0.7);
+        tab.addLabel("- Alpha");
+        tab.addIntegerSlider(data.polygon_fill_alpha, 0, 100, (e, v) -> {
+            data.polygon_fill_alpha = v;
+            data.repaint();
+        });
+
+        tab.addSpace();
+
+        tab.addLabel("Label");
+        tab.addCheckbox("Hover only", data.label_hover, (e, v) -> {
+            data.label_hover = v;
+            data.repaint();
+        });
+        tab.makeCustomSplit(2, 0.3, 0.7);
+        tab.addLabel("- Size");
+        tab.addIntegerSlider(data.label_size, 0, 500, (e, v) -> {
+            data.label_size = v;
+            data.repaint();
+        });
+
+        tab.addSpace(4);
+
+        tab.addLabel("GRAPH RENDERING");
+
+        tab.addCheckbox("Enabled", data.render_graph, (e, v) -> {
+            data.render_graph = v;
+            data.repaint();
+        });
+
+        tab.addSpace();
+
+        tab.addLabel("Vertices");
+        tab.makeCustomSplit(2, 0.3, 0.7);
+        tab.addLabel("- Radius");
+        tab.addIntegerSlider(data.graph_vertex_radius, 0, 100, (e, v) -> {
+            data.graph_vertex_radius = v;
+            data.repaint();
+        });
+
+        tab.addSpace();
+
+        tab.addLabel("Edges");
+        tab.makeCustomSplit(2, 0.3, 0.7);
+        tab.addLabel("- Width");
+        tab.addIntegerSlider(data.graph_edge_width, 0, 100, (e, v) -> {
+            data.graph_edge_width = v;
             data.repaint();
         });
     }

@@ -1,9 +1,7 @@
 package nl.tue.mapwelder.algorithms;
 
-import nl.tue.geometrycore.geometry.linear.Polygon;
 import nl.tue.mapwelder.data.Graph.DefiningMapVertex;
 import nl.tue.mapwelder.data.Graph.Vertex;
-import nl.tue.mapwelder.data.Region;
 import nl.tue.mapwelder.gui.Data;
 
 /**

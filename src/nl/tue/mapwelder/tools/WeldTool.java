@@ -40,7 +40,7 @@ public class WeldTool extends BrushTool {
     public String getDescription() {
         return "All vertices are set to the location that is the mean position of the vertices within the brush. When holding Shift, the clicked location is used instead."
                 + "<br/><br/>"
-                + "When holding Control, any edge fully crossing the brush receives a new vertex at the above-mentioned location as well."
+                + "Any edge fully crossing the brush receives a new vertex at the above-mentioned location as well. When holding Control, such edges are not changed."
                 + "<br/><br/>"
                 + "Press Delete to remove all vertices within the brush.";
     }

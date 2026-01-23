@@ -74,17 +74,27 @@ public class Data {
     public Graph graph = null;
     public boolean autoregraph = true;
 
-    public int boundary = 0;
-    public boolean boundaryhover = false;
-
-    public int fillalpha = 50;
-    public boolean fillalphahover = false;
-
-    public int vertex = 3;
-    public boolean vertexhover = true;
-
-    public int labelsize = 10;
-    public boolean labelhover = true;
+    // polygon settings
+    public boolean render_polygons = true;
+    // vertex
+    public int polygon_vertex_radius = 30;
+    public int polygon_vertex_alpha = 100;
+    public boolean polygon_vertex_hover = true;
+    // edges    
+    public int polygon_edge_width = 0;
+    public int polygon_edge_alpha = 100;
+    public boolean polygon_edge_hover = false;
+    // interior
+    public int polygon_fill_alpha = 50;
+    public boolean polygon_fill_hover = false;
+    // labels
+    public int label_size = 100;
+    public boolean label_hover = true;
+    
+    // graph settings
+    public boolean render_graph = true;
+    public int graph_vertex_radius = 30;
+    public int graph_edge_width = 10;
 
     public DrawPanel draw;
     public SidePanel side;

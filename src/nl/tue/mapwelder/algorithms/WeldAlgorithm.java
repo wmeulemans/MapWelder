@@ -21,9 +21,12 @@ import nl.tue.mapwelder.gui.Data;
 public class WeldAlgorithm extends Algorithm {
 
     private double threshold = 0;
+    private double threshold_squared = 0;
 
     public WeldAlgorithm(Data data) {
-        super(data, "Algorithmic welding", "Detects and automatically welds simple cases in the graph and trims degree-1 paths.");
+        super(data, "Algorithmic welding", "Detects and automatically welds simple cases in the graph and trims degree-1 paths."
+                + "<br/><br/>"
+                + "The provided threshold is indicated the allowed discrete Fréchet distance between the weld paths. This distance is expressed in the coordinate space of the input.");
     }
 
     @Override
@@ -31,7 +34,10 @@ public class WeldAlgorithm extends Algorithm {
         super.createGUI(tab);
 
         tab.addLabel("Threshold:");
-        tab.addDoubleSpinner(threshold, 0, 10000000, 0.01, (e, v) -> threshold = v);
+        tab.addDoubleSpinner(threshold, 0, 10000000, 0.01, (e, v) -> {
+            threshold = v;
+            threshold_squared = v * v;
+        });
 
         tab.addButton("Recommend threshold", (e) -> scan());
     }
@@ -66,7 +72,7 @@ public class WeldAlgorithm extends Algorithm {
         System.out.println("Detecting weld paths");
         boolean[] handled = new boolean[data.graph.getVertices().size()];
         Arrays.fill(handled, false);
-        
+
         int welds = 0;
         for (Vertex v : data.graph.getVertices()) {
             welds += tryVertex(v, handled);
@@ -77,7 +83,7 @@ public class WeldAlgorithm extends Algorithm {
     }
 
     private int tryVertex(Vertex v, boolean[] handled) {
-        
+
         if (handled[v.getGraphIndex()]) {
             return 0;
         }
@@ -186,7 +192,7 @@ public class WeldAlgorithm extends Algorithm {
 
         return Math.min(minweld, dfd[a_n - 1][b_n - 1]);
     }
-    
+
     private boolean tryWelding(Vertex v, Edge a, Edge b, boolean[] handled) {
 
         if (a.getMap().size() != 1) {
@@ -204,14 +210,14 @@ public class WeldAlgorithm extends Algorithm {
 
         Vertex a_first = a.getOtherVertex(v);
         Vertex b_first = b.getOtherVertex(v);
-        
+
         if (handled[a_first.getGraphIndex()] || handled[b_first.getGraphIndex()]) {
             return false;
         }
 
-        if (a_first.squaredDistanceTo(b_first) > threshold
-                && a_first.squaredDistanceTo(v) > threshold
-                && b_first.squaredDistanceTo(v) > threshold) {
+        if (a_first.squaredDistanceTo(b_first) > threshold_squared
+                && a_first.squaredDistanceTo(v) > threshold_squared
+                && b_first.squaredDistanceTo(v) > threshold_squared) {
             // DFD cannot be satisfied
             return false;
         }
@@ -255,7 +261,7 @@ public class WeldAlgorithm extends Algorithm {
             }
         }
 
-        if (dfd[a_n - 1][b_n - 1] > threshold) {
+        if (dfd[a_n - 1][b_n - 1] > threshold_squared) {
             return false;
         }
 

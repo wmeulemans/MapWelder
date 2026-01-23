@@ -12,7 +12,6 @@ import nl.tue.geometrycore.geometry.linear.Rectangle;
 import nl.tue.geometrycore.geometryrendering.GeometryPanel;
 import nl.tue.geometrycore.geometryrendering.glyphs.PointStyle;
 import nl.tue.geometrycore.geometryrendering.styling.Dashing;
-import nl.tue.geometrycore.geometryrendering.styling.ExtendedColors;
 import nl.tue.geometrycore.geometryrendering.styling.Hashures;
 import nl.tue.geometrycore.geometryrendering.styling.SizeMode;
 import nl.tue.geometrycore.geometryrendering.styling.TextAnchor;
@@ -37,108 +36,164 @@ public class DrawPanel extends GeometryPanel {
     @Override
     protected void drawScene() {
         setSizeMode(SizeMode.VIEW);
-        setPointStyle(PointStyle.CIRCLE_WHITE, data.vertex);
+        setPointStyle(PointStyle.CIRCLE_WHITE, data.polygon_vertex_radius / 10.0);
 
         setStroke(Color.BLACK, 1, Dashing.SOLID);
         setAlpha(1);
         setFill(null, Hashures.SOLID);
         draw(data.map.getBox());
 
-        for (Region r : data.map.getRegions()) {
-            Color color;
-            if (r == data.hover) {
-                color = Color.red;
-            } else if (r.getColor() != null) {
-                color = r.getColor();
-            } else {
-                color = Color.black;
-            }
+        if (data.render_polygons) {
+            if (data.polygon_fill_alpha > 0
+                    && (!data.polygon_fill_hover || data.hover != null)) {
 
-            if (data.fillalpha > 0 && (!data.fillalphahover || r == data.hover)) {
                 setStroke(null, 1, Dashing.SOLID);
-                setAlpha(data.fillalpha / 100.0);
-                setFill(color, Hashures.SOLID);
-                draw(r);
-            }
+                setAlpha(data.polygon_fill_alpha / 100.0);
 
-            if (data.boundary > 0 && (!data.boundaryhover || r == data.hover)) {
-                setStroke(color, data.boundary, Dashing.SOLID);
-                setAlpha(1);
-                setFill(null, Hashures.SOLID);
-                draw(r.getParts());
-            }
+                for (Region r : data.map.getRegions()) {
+                    if (!data.polygon_fill_hover || r == data.hover) {
+                        Color color;
+                        if (r == data.hover) {
+                            color = Color.red;
+                        } else if (r.getColor() != null) {
+                            color = r.getColor();
+                        } else {
+                            color = Color.black;
+                        }
 
-            if (data.vertex > 0 && (!data.vertexhover || r == data.hover)) {
-                setStroke(color, data.boundary, Dashing.SOLID);
-                setAlpha(1);
-                setFill(null, Hashures.SOLID);
-                for (Polygon p : r.getParts()) {
-                    draw(p.vertices());
+                        setFill(color, Hashures.SOLID);
+                        draw(r);
+                    }
                 }
             }
 
-            if (data.labelsize > 0 && (!data.labelhover || r == data.hover)) {
-                if (r.getLabel() != null && r.getLabel().length() > 0) {
-                    setStroke(color, 1, Dashing.SOLID);
-                    setTextStyle(TextAnchor.CENTER, data.labelsize);
-                    setAlpha(1);
-                    setFill(color, Hashures.SOLID);
-                    draw(r.getBox().center(), r.getLabel());
+            if (data.polygon_edge_width > 0 && data.polygon_edge_alpha > 0
+                    && (!data.polygon_edge_hover || data.hover != null)) {
+
+                setAlpha(data.polygon_edge_alpha / 100.0);
+                setFill(null, Hashures.SOLID);
+
+                for (Region r : data.map.getRegions()) {
+                    if (!data.polygon_edge_hover || r == data.hover) {
+                        Color color;
+                        if (r == data.hover) {
+                            color = Color.red;
+                        } else if (r.getColor() != null) {
+                            color = r.getColor();
+                        } else {
+                            color = Color.black;
+                        }
+
+                        setStroke(color, data.polygon_edge_width / 10.0, Dashing.SOLID);
+                        draw(r.getParts());
+                    }
+                }
+            }
+
+            if (data.polygon_vertex_radius > 0 && data.polygon_vertex_alpha > 0
+                    && (!data.polygon_vertex_hover || data.hover != null)) {
+
+                setAlpha(data.polygon_vertex_alpha / 100.0);
+                setFill(null, Hashures.SOLID);
+
+                for (Region r : data.map.getRegions()) {
+                    if (!data.polygon_vertex_hover || r == data.hover) {
+                        Color color;
+                        if (r == data.hover) {
+                            color = Color.red;
+                        } else if (r.getColor() != null) {
+                            color = r.getColor();
+                        } else {
+                            color = Color.black;
+                        }
+
+                        setStroke(color, data.polygon_edge_width / 10.0, Dashing.SOLID);
+                        for (Polygon p : r.getParts()) {
+                            draw(p.vertices());
+                        }
+                    }
+                }
+            }
+
+            if (data.label_size > 0 && (!data.label_hover || data.hover != null)) {
+
+                setTextStyle(TextAnchor.CENTER, data.label_size / 10.0);
+                setAlpha(1);
+
+                for (Region r : data.map.getRegions()) {
+                    if (!data.label_hover || r == data.hover) {
+                        Color color;
+                        if (r == data.hover) {
+                            color = Color.red;
+                        } else if (r.getColor() != null) {
+                            color = r.getColor();
+                        } else {
+                            color = Color.black;
+                        }
+
+                        setStroke(color, 1, Dashing.SOLID);
+                        setFill(color, Hashures.SOLID);
+                        draw(r.getBox().center(), r.getLabel());
+                    }
                 }
             }
         }
 
-        if (data.graph != null) {
+        if (data.graph != null && data.render_graph) {
             setFill(null, Hashures.SOLID);
             setAlpha(1);
-            
-            for (Edge e : data.graph.getEdges()) {
-                switch (e.getMap().size()) {
-                    case 1:
-                        setStroke(Color.orange, 1, Dashing.SOLID);
-                        break;
-                    case 2:                        
-                        setStroke(Color.green, 1, Dashing.SOLID);
-                        break;
-                    default:
-                        setStroke(Color.red, 1, Dashing.SOLID);
-                        break;
+
+            if (data.graph_edge_width > 0) {
+                for (Edge e : data.graph.getEdges()) {
+                    switch (e.getMap().size()) {
+                        case 1:
+                            setStroke(Color.orange, data.graph_edge_width / 10.0, Dashing.SOLID);
+                            break;
+                        case 2:
+                            setStroke(Color.green, data.graph_edge_width / 10.0, Dashing.SOLID);
+                            break;
+                        default:
+                            setStroke(Color.red, data.graph_edge_width / 10.0, Dashing.SOLID);
+                            break;
+                    }
+                    draw(e);
                 }
-                draw(e);
             }
 
-            setPointStyle(PointStyle.CIRCLE_SOLID, data.vertex);
+            if (data.graph_vertex_radius > 0) {
+                setPointStyle(PointStyle.CIRCLE_SOLID, data.graph_vertex_radius / 10.0);
 
-            for (Vertex v : data.graph.getVertices()) {
-                switch (v.getDegree()) {
-                    case 0:
-                        setStroke(Color.black, 2, Dashing.SOLID);
-                        draw(v);
-                        break;
-                    case 1:
-                        setStroke(Color.red, 2, Dashing.SOLID);
-                        draw(v);
-                        break;
-                    case 2:
-                        //setStroke(Color.green, 2, Dashing.SOLID);   
-                        break;
-                    case 3:
-                        setStroke(Color.blue, 2, Dashing.SOLID);
-                        draw(v);
-                        break;
-                    default:
-                    case 4:
-                        setStroke(Color.yellow, 2, Dashing.SOLID);
-                        draw(v);
-                        break;
+                for (Vertex v : data.graph.getVertices()) {
+                    switch (v.getDegree()) {
+                        case 0:
+                            setStroke(Color.black, 2, Dashing.SOLID);
+                            draw(v);
+                            break;
+                        case 1:
+                            setStroke(Color.red, 2, Dashing.SOLID);
+                            draw(v);
+                            break;
+                        case 2:
+                            //setStroke(Color.green, 2, Dashing.SOLID);   
+                            break;
+                        case 3:
+                            setStroke(Color.blue, 2, Dashing.SOLID);
+                            draw(v);
+                            break;
+                        default:
+                        case 4:
+                            setStroke(Color.yellow, 2, Dashing.SOLID);
+                            draw(v);
+                            break;
+                    }
                 }
             }
         }
 
-        setStroke(Color.red, data.boundary + 2, Dashing.SOLID);
+        setStroke(Color.red, data.polygon_edge_width / 10.0 + 2, Dashing.SOLID);
         setFill(null, Hashures.SOLID);
         setAlpha(1);
-        setPointStyle(PointStyle.SQUARE_SOLID, data.vertex + 2);
+        setPointStyle(PointStyle.SQUARE_SOLID, data.polygon_vertex_radius / 10.0 + 2);
 
         for (Problem p : data.problems) {
             p.render(this);

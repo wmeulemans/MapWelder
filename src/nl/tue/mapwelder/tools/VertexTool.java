@@ -64,7 +64,7 @@ public class VertexTool extends Tool {
     public void render() {
         if (point != null) {
             data.draw.setStroke(Color.blue, 2, Dashing.SOLID);
-            data.draw.setPointStyle(PointStyle.SQUARE_SOLID, data.vertex + 3);
+            data.draw.setPointStyle(PointStyle.SQUARE_SOLID, data.polygon_vertex_radius + 3);
             data.draw.draw(point);
         }
     }

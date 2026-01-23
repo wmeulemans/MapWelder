@@ -17,11 +17,11 @@ import nl.tue.mapwelder.gui.Data;
  */
 public class Intersections extends Analysis {
 
-    private boolean between = true;
+    private boolean between = false;
     private boolean within = true;
 
     public Intersections(Data data) {
-        super(data, "Intersections", "Finds intersections between and within regions");
+        super(data, "Intersections", "Finds intersections between and within regions.");
     }
 
     @Override
