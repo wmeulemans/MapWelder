@@ -23,6 +23,7 @@ import nl.tue.mapwelder.gui.Data;
 public class GeojsonFormat extends Format {
 
     private String label = "label";
+    private boolean dense = true;    
 
     public GeojsonFormat(Data data) {
         super(data, "GeoJSON", "geojson");
@@ -33,6 +34,10 @@ public class GeojsonFormat extends Format {
         super.createGUI(tab);
         tab.addLabel("ID label");
         tab.addTextField(label, (e, v) -> label = v);
+        
+        tab.addSpace();
+        
+        tab.addCheckbox("Save compact", dense, (e,v) -> dense = v);
 
     }
 
@@ -85,7 +90,7 @@ public class GeojsonFormat extends Format {
 
     @Override
     protected void save(File file, PlaneMap map) throws IOException {
-        try (GeoJSONWriter write = GeoJSONWriter.fileWriter(file, true)) {
+        try (GeoJSONWriter write = GeoJSONWriter.fileWriter(file, dense)) {
 
             write.initialize();
 

@@ -225,13 +225,15 @@ public class DrawPanel extends GeometryPanel {
         Region newhover = null;
         for (Region r : data.map.getRegions()) {
             if (r.getBox().contains(loc)) {
+                int num = 0;
                 for (Polygon p : r.getParts()) {
                     if (p.contains(loc)) {
-                        newhover = r;
+                        num++;
                         break;
                     }
                 }
-                if (newhover != null) {
+                if (num % 2 == 1) {
+                    newhover = r;
                     break;
                 }
             }
